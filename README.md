@@ -50,14 +50,18 @@ from notifox import (
     NotifoxConnectionError
 )
 
+client = NotifoxClient(api_key="your_api_key")
+
 try:
-    client.send_alert(audience=["admin"], alert="Alert")
+    client.send_alert(audience="admin", alert="System is running low on memory")
 except NotifoxAuthenticationError:
-    pass
+    print("Authentication failed. Check your API key.")
 except NotifoxRateLimitError:
-    pass
+    print("Rate limit exceeded. Please wait before sending more alerts.")
 except NotifoxAPIError as e:
-    print(f"{e.status_code}: {e.response_text}")
+    print(f"API error ({e.status_code}): {e.response_text}")
+except NotifoxConnectionError as e:
+    print(f"Connection failed: {e}")
 ```
 
 Available exceptions:
