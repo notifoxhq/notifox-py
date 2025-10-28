@@ -1,27 +1,28 @@
 # notifox/client.py
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from .exceptions import (
-    NotifoxError,
     NotifoxAPIError,
     NotifoxAuthenticationError,
+    NotifoxConnectionError,
+    NotifoxError,
     NotifoxRateLimitError,
-    NotifoxConnectionError
 )
 
 
 class NotifoxClient:
     """
     Python SDK for Notifox alerting API.
-    
+
     Examples:
         client = NotifoxClient(api_key="your_api_key")
         client.send_alert(audience="user1", alert="Server down!")
-        
+
         client = NotifoxClient()  # Reads from NOTIFOX_API_KEY env var
     """
 
@@ -34,7 +35,7 @@ class NotifoxClient:
     ):
         """
         Initialize the Notifox client.
-        
+
         Args:
             api_key: Your Notifox API key. If not provided, will attempt to read from
                      the NOTIFOX_API_KEY environment variable.
@@ -48,10 +49,10 @@ class NotifoxClient:
                 "API key is required. Provide it as an argument or set the "
                 "NOTIFOX_API_KEY environment variable."
             )
-        
+
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
-        
+
         # Create a session with retry logic
         self.session = requests.Session()
         retry_strategy = Retry(
@@ -65,13 +66,13 @@ class NotifoxClient:
     def _handle_response(self, response: requests.Response) -> Dict[str, Any]:
         """
         Handle API response and raise appropriate exceptions for errors.
-        
+
         Args:
             response: The HTTP response from the API
-            
+
         Returns:
             The JSON response data
-            
+
         Raises:
             NotifoxAuthenticationError: For 401 or 403 status codes
             NotifoxRateLimitError: For 429 status code
@@ -83,21 +84,21 @@ class NotifoxClient:
                 status_code=response.status_code,
                 response_text=response.text
             )
-        
+
         if response.status_code == 429:
             raise NotifoxRateLimitError(
                 "Rate limit exceeded. Please try again later.",
                 status_code=response.status_code,
                 response_text=response.text
             )
-        
+
         if response.status_code >= 400:
             raise NotifoxAPIError(
                 f"API error: {response.status_code} - {response.text}",
                 status_code=response.status_code,
                 response_text=response.text
             )
-        
+
         return response.json()
 
     def send_alert(
@@ -107,14 +108,14 @@ class NotifoxClient:
     ) -> Dict[str, Any]:
         """
         Sends an alert to the specified audience.
-        
+
         Args:
             audience: Audience identifier (e.g., mike, devops, support)
             alert: The alert message to send
-            
+
         Returns:
             API response as a dictionary
-            
+
         Raises:
             NotifoxAuthenticationError: If authentication fails
             NotifoxRateLimitError: If rate limit is exceeded
@@ -139,8 +140,8 @@ class NotifoxClient:
         except requests.exceptions.Timeout:
             raise NotifoxConnectionError(
                 f"Request timed out after {self.timeout} seconds"
-            )
+            ) from None
         except requests.exceptions.ConnectionError as e:
-            raise NotifoxConnectionError(f"Connection error: {str(e)}")
+            raise NotifoxConnectionError(f"Connection error: {str(e)}") from e
         except requests.exceptions.RequestException as e:
-            raise NotifoxError(f"Request failed: {str(e)}")
+            raise NotifoxError(f"Request failed: {str(e)}") from e

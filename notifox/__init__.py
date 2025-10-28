@@ -1,10 +1,10 @@
 from .client import NotifoxClient
 from .exceptions import (
-    NotifoxError,
     NotifoxAPIError,
     NotifoxAuthenticationError,
+    NotifoxConnectionError,
+    NotifoxError,
     NotifoxRateLimitError,
-    NotifoxConnectionError
 )
 
 __all__ = [

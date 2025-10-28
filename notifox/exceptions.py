@@ -6,7 +6,7 @@ class NotifoxError(Exception):
 
 class NotifoxAPIError(NotifoxError):
     """Raised when the API returns an error response."""
-    
+
     def __init__(self, message: str, status_code: int, response_text: str = ""):
         self.status_code = status_code
         self.response_text = response_text
