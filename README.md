@@ -39,6 +39,25 @@ client = NotifoxClient(
 )
 ```
 
+## Calculate parts
+
+When you send a message, the length and characters dictate how many parts you will be charged for. You can read more about calculating the parts [here](https://docs.notifox.com/docs/reference/parts).
+
+The Notifox Alerts API exposes a route that lets you calculate the amount of parts a message will be without sending the alert.
+
+```python
+from notifox import NotifoxClient
+
+client = NotifoxClient()
+
+# Calculate the parts of the alert
+response = client.calculate_parts(
+    alert="Hello, world!"
+)
+
+# {'parts': 1, 'cost': 0.025, 'currency': 'USD', 'encoding': 'GSM-7', 'characters': 22, 'message': 'Notifox: Hello, world!'}
+```
+
 ## Error Handling
 
 ```python
