@@ -145,3 +145,38 @@ class NotifoxClient:
             raise NotifoxConnectionError(f"Connection error: {str(e)}") from e
         except requests.exceptions.RequestException as e:
             raise NotifoxError(f"Request failed: {str(e)}") from e
+
+    def calculate_parts(self, alert: str) -> Dict[str, Any]:
+        """
+        Calculates the parts of the alert.
+
+        Args:
+            alert: The alert message to calculate the parts of
+
+        Returns:
+            A dictionary containing information about the alert
+        """
+
+        url = f"{self.base_url}/alert/parts"
+        payload = {
+            "alert": alert
+        }
+
+        try:
+            resp = self.session.post(
+                url,
+                json=payload,
+                timeout=self.timeout
+            )
+
+            return self._handle_response(resp)
+        except requests.exceptions.Timeout:
+            raise NotifoxConnectionError(
+                f"Request timed out after {self.timeout} seconds"
+            ) from None
+        except requests.exceptions.ConnectionError as e:
+            raise NotifoxConnectionError(f"Connection error: {str(e)}") from e
+        except requests.exceptions.RequestException as e:
+            raise NotifoxError(f"Request failed: {str(e)}") from e
+        except Exception as e:
+            raise NotifoxError("An unknown error occurred") from e
