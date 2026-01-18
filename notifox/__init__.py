@@ -6,7 +6,7 @@ from .exceptions import (
     NotifoxError,
     NotifoxRateLimitError,
 )
-from .types import Channel, Email, SMS
+from .types import SMS, Email
 
 __all__ = [
     "NotifoxClient",
