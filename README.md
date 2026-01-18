@@ -11,9 +11,9 @@ pip install notifox
 ## Usage
 
 ```python
-from notifox import NotifoxClient
+import notifox
 
-client = NotifoxClient(api_key="your_api_key_here")
+client = notifox.NotifoxClient(api_key="your_api_key_here")
 client.send_alert(audience="mike", alert="Database server is down!")
 ```
 
@@ -24,14 +24,48 @@ export NOTIFOX_API_KEY="your_api_key_here"
 ```
 
 ```python
-client = NotifoxClient()  # Reads from NOTIFOX_API_KEY
+import notifox
+
+client = notifox.NotifoxClient()  # Reads from NOTIFOX_API_KEY
 client.send_alert(audience="mike", alert="High CPU usage!")
+```
+
+### Channel Selection
+
+You can optionally specify a channel (SMS or email):
+
+```python
+import notifox
+
+client = notifox.NotifoxClient()
+
+# Send via SMS
+response = client.send_alert(
+    audience="mike",
+    alert="Server is down!",
+    channel=notifox.SMS
+)
+
+# Send via email
+response = client.send_alert(
+    audience="mike",
+    alert="Server is down!",
+    channel=notifox.Email
+)
+
+# If channel is not specified, it will be left blank
+response = client.send_alert(
+    audience="mike",
+    alert="Server is down!"
+)
 ```
 
 ### Configuration
 
 ```python
-client = NotifoxClient(
+import notifox
+
+client = notifox.NotifoxClient(
     api_key="your_api_key",
     base_url="https://api.notifox.com",
     timeout=30.0,
@@ -46,9 +80,9 @@ When you send a message, the length and characters dictate how many parts you wi
 The Notifox Alerts API exposes a route that lets you calculate the amount of parts a message will be without sending the alert.
 
 ```python
-from notifox import NotifoxClient
+import notifox
 
-client = NotifoxClient()
+client = notifox.NotifoxClient()
 
 # Calculate the parts of the alert
 response = client.calculate_parts(
@@ -61,25 +95,20 @@ response = client.calculate_parts(
 ## Error Handling
 
 ```python
-from notifox import (
-    NotifoxClient,
-    NotifoxAuthenticationError,
-    NotifoxRateLimitError,
-    NotifoxAPIError,
-    NotifoxConnectionError
-)
+import notifox
 
-client = NotifoxClient(api_key="your_api_key")
+client = notifox.NotifoxClient(api_key="your_api_key")
 
 try:
-    client.send_alert(audience="admin", alert="System is running low on memory")
-except NotifoxAuthenticationError:
+    response = client.send_alert(audience="admin", alert="System is running low on memory")
+    print(f"Alert sent! Message ID: {response.get('message_id')}")
+except notifox.NotifoxAuthenticationError:
     print("Authentication failed. Check your API key.")
-except NotifoxRateLimitError:
+except notifox.NotifoxRateLimitError:
     print("Rate limit exceeded. Please wait before sending more alerts.")
-except NotifoxAPIError as e:
+except notifox.NotifoxAPIError as e:
     print(f"API error ({e.status_code}): {e.response_text}")
-except NotifoxConnectionError as e:
+except notifox.NotifoxConnectionError as e:
     print(f"Connection failed: {e}")
 ```
 

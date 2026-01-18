@@ -1,14 +1,15 @@
-from notifox import NotifoxClient
+import notifox
 
 # The client automatically reads NOTIFOX_API_KEY from environment
-# or you can pass it directly: NotifoxClient(api_key="your_key")
-client = NotifoxClient()
+# or you can pass it directly: notifox.NotifoxClient(api_key="your_key")
+client = notifox.NotifoxClient()
 
-# Send an alert
+# Send an alert via SMS
 response = client.send_alert(
     audience="mathis",
-    alert="Hello, world!"
+    alert="Hello, world!",
+    channel=notifox.SMS
 )
 
-print(f"Alert sent: {response}")
+print(f"Alert sent! Message ID: {response.get('message_id')}")
 

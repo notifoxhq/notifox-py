@@ -1,6 +1,6 @@
 # notifox/client.py
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -13,6 +13,7 @@ from .exceptions import (
     NotifoxError,
     NotifoxRateLimitError,
 )
+from .types import Channel
 
 
 class NotifoxClient:
@@ -20,10 +21,12 @@ class NotifoxClient:
     Python SDK for Notifox alerting API.
 
     Examples:
-        client = NotifoxClient(api_key="your_api_key")
-        client.send_alert(audience="user1", alert="Server down!")
+        import notifox
 
-        client = NotifoxClient()  # Reads from NOTIFOX_API_KEY env var
+        client = notifox.NotifoxClient(api_key="your_api_key")
+        client.send_alert(audience="user1", alert="Server down!", channel=notifox.SMS)
+
+        client = notifox.NotifoxClient()  # Reads from NOTIFOX_API_KEY env var
     """
 
     def __init__(
@@ -104,7 +107,8 @@ class NotifoxClient:
     def send_alert(
         self,
         audience: str,
-        alert: str
+        alert: str,
+        channel: Optional[Union[Channel, str]] = None
     ) -> Dict[str, Any]:
         """
         Sends an alert to the specified audience.
@@ -112,9 +116,12 @@ class NotifoxClient:
         Args:
             audience: Audience identifier (e.g., mike, devops, support)
             alert: The alert message to send
+            channel: Optional channel type. Use notifox.SMS or notifox.Email,
+                    or pass "sms" or "email" as a string. If not provided,
+                    the channel will be left blank.
 
         Returns:
-            API response as a dictionary
+            API response as a dictionary containing message_id and other fields
 
         Raises:
             NotifoxAuthenticationError: If authentication fails
@@ -124,10 +131,17 @@ class NotifoxClient:
         """
         url = f"{self.base_url}/alert"
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        payload = {
+        payload: Dict[str, Any] = {
             "audience": audience,
             "alert": alert,
         }
+
+        if channel is not None:
+            # Convert Channel object to string, or use string directly
+            if isinstance(channel, Channel):
+                payload["channel"] = str(channel)
+            else:
+                payload["channel"] = channel
 
         try:
             resp = self.session.post(
