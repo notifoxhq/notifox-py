@@ -1,5 +1,4 @@
 # notifox/exceptions.py
-import json
 from typing import Optional
 
 
