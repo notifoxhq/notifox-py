@@ -4,7 +4,10 @@ from .exceptions import (
     NotifoxAuthenticationError,
     NotifoxConnectionError,
     NotifoxError,
+    NotifoxInsufficientBalanceError,
     NotifoxRateLimitError,
+    NotifoxServerError,
+    NotifoxValidationError,
 )
 from .types import SMS, Email
 
@@ -13,7 +16,10 @@ __all__ = [
     "NotifoxError",
     "NotifoxAPIError",
     "NotifoxAuthenticationError",
+    "NotifoxValidationError",
+    "NotifoxInsufficientBalanceError",
     "NotifoxRateLimitError",
+    "NotifoxServerError",
     "NotifoxConnectionError",
     "Email",
     "SMS",
