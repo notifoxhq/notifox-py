@@ -102,19 +102,30 @@ client = notifox.NotifoxClient(api_key="your_api_key")
 try:
     response = client.send_alert(audience="admin", alert="System is running low on memory")
     print(f"Alert sent! Message ID: {response.get('message_id')}")
-except notifox.NotifoxAuthenticationError:
-    print("Authentication failed. Check your API key.")
+except notifox.NotifoxAuthenticationError as e:
+    print(f"Authentication failed: {e}")
+except notifox.NotifoxValidationError as e:
+    print(f"Validation error: {e}")
+    if e.error:
+        print(f"Error type: {e.error}")
+except notifox.NotifoxInsufficientBalanceError:
+    print("Insufficient balance. Please add funds to your account.")
 except notifox.NotifoxRateLimitError:
     print("Rate limit exceeded. Please wait before sending more alerts.")
+except notifox.NotifoxServerError as e:
+    print(f"Server error: {e}")
 except notifox.NotifoxAPIError as e:
-    print(f"API error ({e.status_code}): {e.response_text}")
+    print(f"API error ({e.status_code}): {e}")
 except notifox.NotifoxConnectionError as e:
     print(f"Connection failed: {e}")
 ```
 
 Available exceptions:
-- `NotifoxError` - Base exception
+- `NotifoxError` - Base exception for all Notifox errors
 - `NotifoxAuthenticationError` - Authentication failed (401/403)
+- `NotifoxValidationError` - Request validation failed (400)
+- `NotifoxInsufficientBalanceError` - Insufficient balance (402)
 - `NotifoxRateLimitError` - Rate limit exceeded (429)
+- `NotifoxServerError` - Server errors (500)
 - `NotifoxAPIError` - General API errors
-- `NotifoxConnectionError` - Network errors
+- `NotifoxConnectionError` - Network/connection errors
