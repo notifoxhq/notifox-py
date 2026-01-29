@@ -18,6 +18,7 @@ from .exceptions import (
     NotifoxValidationError,
 )
 from .types import Channel
+from .version import __version__
 
 
 class NotifoxClient:
@@ -62,6 +63,7 @@ class NotifoxClient:
 
         # Create a session with retry logic
         self.session = requests.Session()
+        self.session.headers["User-Agent"] = f"notifox-py/{__version__}"
         retry_strategy = Retry(
             total=max_retries,
             backoff_factor=0.5,
