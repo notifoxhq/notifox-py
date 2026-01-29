@@ -10,6 +10,7 @@ from .exceptions import (
     NotifoxValidationError,
 )
 from .types import SMS, Email
+from .version import __version__
 
 __all__ = [
     "NotifoxClient",
@@ -24,4 +25,3 @@ __all__ = [
     "Email",
     "SMS",
 ]
-__version__ = "0.1.3"
